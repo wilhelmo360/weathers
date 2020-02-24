@@ -38,3 +38,19 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
 }
+
+
+sceneform.asset('sampledata/Samba_Dancing.fbx',
+        'default',
+        'sampledata/Samba_Dancing.sfa',
+        'src/main/assets/Samba_Dancing')
+
+sceneform.asset('sampledata/raincloud.fbx',
+        'default',
+        'sampledata/raincloud.sfa',
+        'src/main/assets/raincloud')
+
+sceneform.asset('sampledata/cloud2.fbx',
+        'default',
+        'sampledata/cloud2.sfa',
+        'src/main/assets/cloud2')
