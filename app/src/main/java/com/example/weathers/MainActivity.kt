@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import com.example.weathers.R.layout.activity_main
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
@@ -24,15 +25,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        setContentView(activity_main)
         btn.setOnClickListener{ view -> addObject() }
         btn.text = "Check weather"
         fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment;
         modelUri = Uri.parse("raincloud.sfb")
 
-        val renderableFuture = ModelRenderable.builder()
-            .setSource(fragment.context, modelUri)
-            .build()
+        val renderableFuture = ModelRenderable.builder().setSource(fragment.context, modelUri).build()
         renderableFuture.thenAccept {
                 it -> testRenderable = it
             val danceData = testRenderable!!.getAnimationData(0)
