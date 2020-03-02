@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ARbasic2</string>
+  <string name="xml_error">xml error</string>
+  <string name="connection_error">Connection error</string>
+  <string name="page_title" />
+  <string name="updated" />
+</resources>
