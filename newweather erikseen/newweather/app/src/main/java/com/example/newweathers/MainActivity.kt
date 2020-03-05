@@ -7,11 +7,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.RelativeLayout
@@ -20,6 +22,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import com.google.ar.core.HitResult
+import com.google.ar.core.Plane
+import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.HitTestResult
+import com.google.ar.sceneform.animation.ModelAnimator
+import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.ux.ArFragment
+import com.google.ar.sceneform.ux.TransformableNode
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
@@ -31,13 +42,56 @@ class MainActivity : AppCompatActivity() {
     val PERMISSION_ID = 42
     lateinit var mFusedLocationClient: FusedLocationProviderClient
 
+    private lateinit var fragment: ArFragment
+    private lateinit var modelUri: Uri
+    private lateinit var danceAnimator: ModelAnimator
+    private var testRenderable: ModelRenderable? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        btn.setOnClickListener{ view -> addObject() }
+        btn.text = "Check weather"
+        fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment;
+        modelUri = Uri.parse("Lowpoly_Notebook_2.sfb")
+
         getLastLocation()
 
+    }
+    private fun addObject() {
+        val frame = fragment.arSceneView.arFrame
+        val pt = getScreenCenter()
+        val hits: List<HitResult>
+        if (frame != null && testRenderable != null) {
+
+
+            hits = frame.hitTest(pt.x.toFloat(), pt.y.toFloat())
+            for (hit in hits) {
+                val trackable = hit.trackable
+                if (trackable is Plane) {
+                    val anchor = hit!!.createAnchor()
+                    val anchorNode = AnchorNode(anchor)
+                    anchorNode.setParent(fragment.arSceneView.scene)
+                    val mNode = TransformableNode(fragment.transformationSystem)
+                    mNode.setParent(anchorNode)
+                    mNode.renderable = testRenderable
+                    mNode.select()
+                    mNode.setOnTapListener { hitTestRes: HitTestResult?, motionEv: MotionEvent? ->
+                        if (!danceAnimator.isRunning) {
+                            danceAnimator.repeatCount=2
+                            danceAnimator.start()
+                        }
+                    }
+                    break
+                }
+            }
+        }
+    }
+    private fun getScreenCenter(): android.graphics.Point {
+        val vw = findViewById<View>(android.R.id.content) as View
+        return android.graphics.Point(vw.width / 2, vw.height / 2)
     }
 
     @SuppressLint("MissingPermission")
@@ -138,16 +192,9 @@ class MainActivity : AppCompatActivity() {
 
         override fun doInBackground(vararg params: Location?): String? {
           Log.d("BGTASK", "alive?")
-            //var response:String?
             try{
-                //val LAT = mFusedLocationClient.lastLocation.result?.latitude
-                //val LON = mFusedLocationClient.lastLocation.result?.longitude
-              //Log.d("BGTASK", "what is wrong? $LAT and $LON")
-
-//"https://api.openweathermap.org/data/2.5/weather?lat=$LAT&lon=$LON&units=metric&appid=$API"
               val response = URL("https://api.openweathermap.org/data/2.5/weather?lat=${params[0]?.latitude}&lon=${params[0]?.longitude}&units=metric&appid=$API").readText(
                 Charsets.UTF_8
-              //https://api.openweathermap.org/data/2.5/weather?q=dhaka,bd&units=metric&appid=8118ed6ee68db2debfaaa5a44c832918
               )
               Log.d("BGTASK", "with data? $response")
               return response
@@ -160,7 +207,6 @@ class MainActivity : AppCompatActivity() {
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
             try {
-                /* Extracting JSON returns from the API */
                 val jsonObj = JSONObject(result)
                 val main = jsonObj.getJSONObject("main")
                 val sys = jsonObj.getJSONObject("sys")
@@ -195,13 +241,11 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.pressure).text = pressure
                 findViewById<TextView>(R.id.humidity).text = humidity
 
-                /* Views populated, Hiding the loader, Showing the main design */
                 findViewById<ProgressBar>(R.id.loader).visibility = View.GONE
                 findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
 
             } catch (e: Exception) {
                 findViewById<ProgressBar>(R.id.loader).visibility = View.GONE
-                //findViewById<TextView>(R.id.errorText).visibility = View.VISIBLE
             }
 
         }
