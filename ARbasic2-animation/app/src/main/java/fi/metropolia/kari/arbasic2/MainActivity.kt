@@ -35,75 +35,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var modelUri: Uri
     private lateinit var danceAnimator: ModelAnimator
     private var testRenderable: ModelRenderable? = null
-    //var empDataHashMap = HashMap<String, String>()
-    //var empList: ArrayList<HashMap<String, String>> = ArrayList()
-    //val url = URL("view-source:https://www.ilmatieteenlaitos.fi/saa/Espoo")
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
-      /*val lv = findViewById<ListView>(R.id.listView)
-
-      // Using a background thread to do network code
-      val thread = object : Thread() {
-        override fun run() {
-          try {
-            // Comment-out this line of code
-            // val istream = assets.open("empdetail.xml")
-            val builderFactory = DocumentBuilderFactory.newInstance()
-            val docBuilder = builderFactory.newDocumentBuilder()
-            val doc = docBuilder.parse(InputSource(url.openStream()))
-            // reading player tags
-            val nList = doc.getElementsByTagName("meteogram-temperatures")
-            for (i in 0 until nList.length) {
-              if (nList.item(0).nodeType.equals(Node.ELEMENT_NODE)) {
-                empDataHashMap = HashMap()
-                val element = nList.item(i) as Element
-                //empDataHashMap.put("name", getNodeValue("name", element))
-                //empDataHashMap.put("id", getNodeValue("id", element))
-                empDataHashMap.put("title", getNodeValue("title", element))
-
-                empList.add(empDataHashMap)
-              }
-            }
-
-            val adapter = SimpleAdapter(
-              this@MainActivity,
-              empList,
-              R.layout.custom_list,
-              arrayOf("title"),
-              intArrayOf(R.id.title)
-            )
-
-            runOnUiThread {
-              lv.setAdapter(adapter)
-            }
-          } catch (e: IOException) {
-            e.printStackTrace()
-          } catch (e: ParserConfigurationException) {
-            e.printStackTrace()
-          } catch (e: SAXException) {
-            e.printStackTrace()
-          }
-        }
-      }
-
-      thread.start()*/
-
-
-
-
-
         btn.setOnClickListener{ view -> addObject() }
         btn.text = "Check weather"
         fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment;
         modelUri = Uri.parse("raincloud.sfb")
-
-      //var txt = xmlDoc.getElementsByTagName("title")[0].childNodes[0].nodeValue;
 
         val renderableFuture = ModelRenderable.builder()
             .setSource(fragment.context, modelUri)
@@ -144,23 +85,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
- /* protected fun getNodeValue(tag: String, element: Element): String{
-    val nodeList = element.getElementsByTagName(tag)
-    val node = nodeList.item(0)
-    if(node != null){
-      if(node.hasChildNodes()){
-        val child = node.firstChild
-        while(child!=null){
-          if(child.nodeType === org.w3c.dom.Node.TEXT_NODE)
-          {
-            return child.nodeValue
-          }
-        }
-      }
-    }
-    return ""
-  }*/
 
   private fun getScreenCenter(): android.graphics.Point {
     val vw = findViewById<View>(android.R.id.content) as View
