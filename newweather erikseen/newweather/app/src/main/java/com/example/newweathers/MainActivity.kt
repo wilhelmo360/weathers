@@ -7,7 +7,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Looper
@@ -15,28 +14,28 @@ import android.provider.Settings
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
+import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
-import com.google.ar.sceneform.HitTestResult
-import com.google.ar.sceneform.animation.ModelAnimator
-import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.rendering.Renderable
+import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+
+    lateinit var arFragment: ArFragment
+
 
     val API: String = "7c9b423faa6dc538821ef3799ee498c0"
     val PERMISSION_ID = 42
@@ -49,7 +48,18 @@ class MainActivity : AppCompatActivity() {
 
         getLastLocation()
 
+        arFragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
+
+        arFragment.setOnTapArPlaneListener { hitResult: HitResult, plane: Plane, motionEvent: MotionEvent ->
+            if (plane.type != Plane.Type.HORIZONTAL_UPWARD_FACING) {
+                return@setOnTapArPlaneListener
+            }
+            val anchor = hitResult.createAnchor()
+            placeObject(arFragment, anchor)
+        }
+
     }
+
 
 
     @SuppressLint("MissingPermission")
@@ -143,8 +153,8 @@ class MainActivity : AppCompatActivity() {
         override fun onPreExecute() {
             super.onPreExecute()
             /* Showing the ProgressBar, Making the main design GONE */
-            findViewById<ProgressBar>(R.id.loader).visibility = View.VISIBLE
-            findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
+//            findViewById<ProgressBar>(R.id.loader).visibility = View.VISIBLE
+//            findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
             //findViewById<TextView>(R.id.errorText).visibility = View.GONE
         }
 
@@ -208,4 +218,32 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
+    private fun placeObject(fragment: ArFragment, anchor: Anchor) {
+        ViewRenderable.builder()
+            .setView(fragment.context, R.layout.weatherview)
+            .build()
+            .thenAccept {
+                it.isShadowCaster = false
+                it.isShadowReceiver = false
+                /*it.view.findViewById<Button>(R.id.btn).setOnClickListener {
+                }*/
+                addControlsToScene(fragment, anchor, it)
+            }
+            .exceptionally {
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage(it.message).setTitle("Error")
+                val dialog = builder.create()
+                dialog.show()
+                return@exceptionally null
+            }
+    }
+
+    private fun addControlsToScene(fragment: ArFragment, anchor: Anchor, renderable: Renderable) {
+        val anchorNode = AnchorNode(anchor)
+        val node = TransformableNode(fragment.transformationSystem)
+        node.renderable = renderable
+        node.setParent(anchorNode)
+        fragment.arSceneView.scene.addChild(anchorNode)
+    }
+
 }
