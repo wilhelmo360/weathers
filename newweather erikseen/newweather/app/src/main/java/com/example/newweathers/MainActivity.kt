@@ -42,57 +42,15 @@ class MainActivity : AppCompatActivity() {
     val PERMISSION_ID = 42
     lateinit var mFusedLocationClient: FusedLocationProviderClient
 
-    private lateinit var fragment: ArFragment
-    private lateinit var modelUri: Uri
-    private lateinit var danceAnimator: ModelAnimator
-    private var testRenderable: ModelRenderable? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
-        btn.setOnClickListener{ view -> addObject() }
-        btn.text = "Check weather"
-        fragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment;
-        modelUri = Uri.parse("Lowpoly_Notebook_2.sfb")
-
         getLastLocation()
 
     }
-    private fun addObject() {
-        val frame = fragment.arSceneView.arFrame
-        val pt = getScreenCenter()
-        val hits: List<HitResult>
-        if (frame != null && testRenderable != null) {
 
-
-            hits = frame.hitTest(pt.x.toFloat(), pt.y.toFloat())
-            for (hit in hits) {
-                val trackable = hit.trackable
-                if (trackable is Plane) {
-                    val anchor = hit!!.createAnchor()
-                    val anchorNode = AnchorNode(anchor)
-                    anchorNode.setParent(fragment.arSceneView.scene)
-                    val mNode = TransformableNode(fragment.transformationSystem)
-                    mNode.setParent(anchorNode)
-                    mNode.renderable = testRenderable
-                    mNode.select()
-                    mNode.setOnTapListener { hitTestRes: HitTestResult?, motionEv: MotionEvent? ->
-                        if (!danceAnimator.isRunning) {
-                            danceAnimator.repeatCount=2
-                            danceAnimator.start()
-                        }
-                    }
-                    break
-                }
-            }
-        }
-    }
-    private fun getScreenCenter(): android.graphics.Point {
-        val vw = findViewById<View>(android.R.id.content) as View
-        return android.graphics.Point(vw.width / 2, vw.height / 2)
-    }
 
     @SuppressLint("MissingPermission")
     private fun getLastLocation() {
