@@ -45,3 +45,24 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+
+
+sceneform.asset('sampledata/cloud.obj',
+        'default',
+        'sampledata/cloud.sfa',
+        'src/main/assets/cloud')
+
+sceneform.asset('sampledata/lightning.obj',
+        'default',
+        'sampledata/lightning.sfa',
+        'src/main/assets/lightning')
+
+sceneform.asset('sampledata/sun.obj',
+        'default',
+        'sampledata/sun.sfa',
+        'src/main/assets/sun')
+
+sceneform.asset('sampledata/waterdrop.obj',
+        'default',
+        'sampledata/waterdrop.sfa',
+        'src/main/assets/waterdrop')
