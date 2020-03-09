@@ -243,7 +243,9 @@ class MainActivity : AppCompatActivity() {
         node.renderable = renderable
         node.setParent(anchorNode)
         fragment.arSceneView.scene.addChild(anchorNode)
-        node.scaleController.maxScale()
+        node.scaleController.maxScale = 0.2f
+        node.scaleController.minScale = 0.1f
+        node.rotationController.isEnabled = false
     }
 
 }
