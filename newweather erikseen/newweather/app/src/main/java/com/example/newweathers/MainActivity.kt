@@ -61,9 +61,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     @SuppressLint("MissingPermission")
-    private fun getLastLocation() {
+    fun getLastLocation() {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
 
@@ -73,8 +72,8 @@ class MainActivity : AppCompatActivity() {
                         requestNewLocationData()
                     } else {
                       weatherTask().execute(location)
-                        findViewById<TextView>(R.id.latTextView).text = location.latitude.toString()
-                        findViewById<TextView>(R.id.lonTextView).text = location.longitude.toString()
+                        findViewById<TextView>(R.id.latTextView)?.text = location.latitude.toString()
+                        findViewById<TextView>(R.id.lonTextView)?.text = location.longitude.toString()
                     }
                 }
             } else {
@@ -209,14 +208,14 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.pressure).text = pressure
                 findViewById<TextView>(R.id.humidity).text = humidity
 
-                findViewById<ProgressBar>(R.id.loader).visibility = View.GONE
                 findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
 
+
             } catch (e: Exception) {
-                findViewById<ProgressBar>(R.id.loader).visibility = View.GONE
             }
 
         }
+
     }
     private fun placeObject(fragment: ArFragment, anchor: Anchor) {
         ViewRenderable.builder()
@@ -244,6 +243,7 @@ class MainActivity : AppCompatActivity() {
         node.renderable = renderable
         node.setParent(anchorNode)
         fragment.arSceneView.scene.addChild(anchorNode)
+        node.scaleController.maxScale()
     }
 
 }
