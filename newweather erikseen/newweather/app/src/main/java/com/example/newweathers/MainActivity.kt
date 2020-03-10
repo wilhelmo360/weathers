@@ -27,15 +27,18 @@ import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+
+    var settings = arrayOf("Settings", "Color")
+    var spinner:Spinner? = null
 
     lateinit var arFragment: ArFragment
-
 
     val API: String = "7c9b423faa6dc538821ef3799ee498c0"
     val PERMISSION_ID = 42
@@ -44,7 +47,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
+        spinner = this.settings_spinner
+        spinner!!.onItemSelectedListener = this
+
+        val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, settings)
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner!!.adapter = aa
 
         getLastLocation()
 
@@ -58,6 +69,13 @@ class MainActivity : AppCompatActivity() {
             placeObject(arFragment, anchor)
         }
 
+    }
+
+    override fun onItemSelected(arg0: AdapterView<*>, arg1: View, position: Int, id: Long) {
+
+    }
+
+    override fun onNothingSelected(arg0: AdapterView<*>) {
     }
 
 
@@ -95,7 +113,7 @@ class MainActivity : AppCompatActivity() {
         mLocationRequest.numUpdates = 1
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        mFusedLocationClient!!.requestLocationUpdates(
+        mFusedLocationClient.requestLocationUpdates(
             mLocationRequest, mLocationCallback,
             Looper.myLooper()
         )
@@ -148,14 +166,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    inner class weatherTask() : AsyncTask<Location, Void, String>() {
-        override fun onPreExecute() {
-            super.onPreExecute()
-            /* Showing the ProgressBar, Making the main design GONE */
-//            findViewById<ProgressBar>(R.id.loader).visibility = View.VISIBLE
-//            findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
-            //findViewById<TextView>(R.id.errorText).visibility = View.GONE
-        }
+    inner class weatherTask : AsyncTask<Location, Void, String>() {
 
         override fun doInBackground(vararg params: Location?): String? {
           Log.d("BGTASK", "alive?")
@@ -173,7 +184,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
-            try {
+
                 val jsonObj = JSONObject(result)
                 val main = jsonObj.getJSONObject("main")
                 val sys = jsonObj.getJSONObject("sys")
@@ -195,27 +206,20 @@ class MainActivity : AppCompatActivity() {
 
                 val address = jsonObj.getString("name")+", "+sys.getString("country")
 
-                /* Populating extracted data into our views */
-                findViewById<TextView>(R.id.address).text = address
-                findViewById<TextView>(R.id.updated_at).text =  updatedAtText
-                findViewById<TextView>(R.id.status).text = weatherDescription.capitalize()
-                findViewById<TextView>(R.id.temp).text = temp
-                findViewById<TextView>(R.id.temp_min).text = tempMin
-                findViewById<TextView>(R.id.temp_max).text = tempMax
-                findViewById<TextView>(R.id.sunrise).text = SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(Date(sunrise*1000))
-                findViewById<TextView>(R.id.sunset).text = SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(Date(sunset*1000))
-                findViewById<TextView>(R.id.wind).text = windSpeed
-                findViewById<TextView>(R.id.pressure).text = pressure
-                findViewById<TextView>(R.id.humidity).text = humidity
+                findViewById<TextView>(R.id.address)?.text = address
+                findViewById<TextView>(R.id.updated_at)?.text =  updatedAtText
+                findViewById<TextView>(R.id.status)?.text = weatherDescription.capitalize()
+                findViewById<TextView>(R.id.temp)?.text = temp
+                findViewById<TextView>(R.id.temp_min)?.text = tempMin
+                findViewById<TextView>(R.id.temp_max)?.text = tempMax
+                findViewById<TextView>(R.id.sunrise)?.text = SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(Date(sunrise*1000))
+                findViewById<TextView>(R.id.sunset)?.text = SimpleDateFormat("hh:mm a", Locale.ENGLISH).format(Date(sunset*1000))
+                findViewById<TextView>(R.id.wind)?.text = windSpeed
+                findViewById<TextView>(R.id.pressure)?.text = pressure
+                findViewById<TextView>(R.id.humidity)?.text = humidity
 
-                findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
-
-
-            } catch (e: Exception) {
-            }
-
+                findViewById<RelativeLayout>(R.id.mainContainer)?.visibility = View.VISIBLE
         }
-
     }
     private fun placeObject(fragment: ArFragment, anchor: Anchor) {
         ViewRenderable.builder()
@@ -224,8 +228,6 @@ class MainActivity : AppCompatActivity() {
             .thenAccept {
                 it.isShadowCaster = false
                 it.isShadowReceiver = false
-                /*it.view.findViewById<Button>(R.id.btn).setOnClickListener {
-                }*/
                 addControlsToScene(fragment, anchor, it)
             }
             .exceptionally {
@@ -246,6 +248,7 @@ class MainActivity : AppCompatActivity() {
         node.scaleController.maxScale = 0.2f
         node.scaleController.minScale = 0.1f
         node.rotationController.isEnabled = false
+
     }
 
 }
