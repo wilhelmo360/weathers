@@ -22,5 +22,4 @@
         android:layout_height="0dp"
         android:layout_weight="5">
     </fragment>
-
 </LinearLayout>
