@@ -7,15 +7,15 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-<fragment
-    android:id="@+id/sceneform_fragment"
-    android:name="com.google.ar.sceneform.ux.ArFragment"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:layout_weight="5">
-</fragment>
+    <fragment
+        android:id="@+id/sceneform_fragment"
+        android:name="com.google.ar.sceneform.ux.ArFragment"
+        android:layout_width="match_parent"
+        android:layout_height="117dp"
+        android:layout_weight="5"></fragment>
 
-<Button
+
+    <Button
 android:id="@+id/btn"
 android:layout_width="match_parent"
 android:layout_height="0dp"
