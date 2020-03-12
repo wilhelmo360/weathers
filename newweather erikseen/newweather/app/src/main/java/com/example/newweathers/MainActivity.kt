@@ -18,25 +18,28 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.newweathers.R.layout.weatherview
 import com.google.android.gms.location.*
 import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
+import org.w3c.dom.Text
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class MainActivity : AppCompatActivity() {
 
-    var settings = arrayOf("Settings", "Color")
-    var spinner:Spinner? = null
+
 
     lateinit var arFragment: ArFragment
 
@@ -48,14 +51,25 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        var buttonstate = 1
+        val btn = findViewById<Button>(R.id.color_button)
+        val layout = findViewById<LinearLayout>(R.id.theTop)
+
+
+        btn.setOnClickListener {
+            if (buttonstate % 2 == 0){
+                layout.setBackgroundColor(getColor(R.color.colorPrimaryDark))
+
+                Toast.makeText(this@MainActivity, "Color Changed.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                layout.setBackgroundColor(getColor(R.color.colorAccent))
+
+            }
+            buttonstate++
+        }
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        spinner = this.settings_spinner
-        spinner!!.onItemSelectedListener = this
-
-        val aa = ArrayAdapter(this, android.R.layout.simple_spinner_item, settings)
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner!!.adapter = aa
 
         getLastLocation()
 
@@ -69,13 +83,6 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             placeObject(arFragment, anchor)
         }
 
-    }
-
-    override fun onItemSelected(arg0: AdapterView<*>, arg1: View, position: Int, id: Long) {
-
-    }
-
-    override fun onNothingSelected(arg0: AdapterView<*>) {
     }
 
 
@@ -122,8 +129,8 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     private val mLocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             var mLastLocation: Location = locationResult.lastLocation
-            findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
-            findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
+            findViewById<TextView>(R.id.latTextView)?.text = mLastLocation.latitude.toString()
+            findViewById<TextView>(R.id.lonTextView)?.text = mLastLocation.longitude.toString()
         }
     }
 
@@ -178,13 +185,12 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
               return response
             }catch (e: Exception){
               print("error: response set to null")
+                return ""
             }
-            return null
         }
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
-
                 val jsonObj = JSONObject(result)
                 val main = jsonObj.getJSONObject("main")
                 val sys = jsonObj.getJSONObject("sys")
@@ -223,7 +229,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
     private fun placeObject(fragment: ArFragment, anchor: Anchor) {
         ViewRenderable.builder()
-            .setView(fragment.context, R.layout.weatherview)
+            .setView(arFragment.context, weatherview)
             .build()
             .thenAccept {
                 it.isShadowCaster = false
@@ -247,8 +253,7 @@ class MainActivity : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         fragment.arSceneView.scene.addChild(anchorNode)
         node.scaleController.maxScale = 0.2f
         node.scaleController.minScale = 0.1f
-        node.rotationController.isEnabled = false
-
+        node.rotationController.isEnabled = true
     }
 
 }
