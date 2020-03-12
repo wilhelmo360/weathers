@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.example.newweathers.R.layout.weatherview
 import com.google.android.gms.location.*
 import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
@@ -39,7 +40,10 @@ import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import kotlinx.android.synthetic.*
+import kotlinx.android.synthetic.main.activity_main.*
 import org.json.JSONObject
+import org.w3c.dom.Text
 import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
@@ -56,7 +60,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var weather: Node
 */
 
-
     val API: String = "7c9b423faa6dc538821ef3799ee498c0"
     val PERMISSION_ID = 42
     lateinit var mFusedLocationClient: FusedLocationProviderClient
@@ -67,6 +70,25 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        var buttonstate = 1
+        val btn = findViewById<Button>(R.id.color_button)
+        val layout = findViewById<LinearLayout>(R.id.theTop)
+
+
+        btn.setOnClickListener {
+            if (buttonstate % 2 == 0){
+                layout.setBackgroundColor(getColor(R.color.colorPrimaryDark))
+
+                Toast.makeText(this@MainActivity, "Color Changed.", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                layout.setBackgroundColor(getColor(R.color.colorAccent))
+
+            }
+            buttonstate++
+        }
+
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
 
@@ -147,7 +169,7 @@ class MainActivity : AppCompatActivity() {
         mLocationRequest.numUpdates = 1
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        mFusedLocationClient!!.requestLocationUpdates(
+        mFusedLocationClient.requestLocationUpdates(
             mLocationRequest, mLocationCallback,
             Looper.myLooper()
         )
@@ -155,9 +177,10 @@ class MainActivity : AppCompatActivity() {
 
     private val mLocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
-            val mLastLocation: Location = locationResult.lastLocation
-            findViewById<TextView>(R.id.latTextView).text = mLastLocation.latitude.toString()
-            findViewById<TextView>(R.id.lonTextView).text = mLastLocation.longitude.toString()
+
+            var mLastLocation: Location = locationResult.lastLocation
+            findViewById<TextView>(R.id.latTextView)?.text = mLastLocation.latitude.toString()
+            findViewById<TextView>(R.id.lonTextView)?.text = mLastLocation.longitude.toString()
         }
     }
 
@@ -221,15 +244,15 @@ class MainActivity : AppCompatActivity() {
               return response
             }catch (e: Exception){
               print("error: response set to null")
+                return ""
             }
-            return null
         }
 
         override fun onPostExecute(result: String?) {
 
             super.onPostExecute(result)
-            try {
 
+            try {
                 val jsonObj = JSONObject(result)
                 val main = jsonObj.getJSONObject("main")
                 val sys = jsonObj.getJSONObject("sys")
@@ -253,6 +276,9 @@ class MainActivity : AppCompatActivity() {
                 //setContentView(R.layout.weatherview)
                 /* Populating extracted data into our views */
                 //findViewById<TextView>(R.id.address).text = address
+                val address = jsonObj.getString("name")+", "+sys.getString("country")
+
+                findViewById<TextView>(R.id.address)?.text = address
                 findViewById<TextView>(R.id.updated_at)?.text =  updatedAtText
                 findViewById<TextView>(R.id.status)?.text = weatherDescription.capitalize()
                 findViewById<TextView>(R.id.temp)?.text = temp
@@ -263,7 +289,6 @@ class MainActivity : AppCompatActivity() {
                 findViewById<TextView>(R.id.wind)?.text = windSpeed
                 findViewById<TextView>(R.id.pressure)?.text = pressure
                 findViewById<TextView>(R.id.humidity)?.text = humidity
-
                 findViewById<RelativeLayout>(R.id.mainContainer).visibility = View.VISIBLE
 
 
@@ -287,7 +312,6 @@ class MainActivity : AppCompatActivity() {
 
 
         }*/
-
     }
 
     fun tapListener(){
@@ -305,7 +329,7 @@ class MainActivity : AppCompatActivity() {
     private fun placeObject(fragment: ArFragment, anchor: Anchor) {
 
         ViewRenderable.builder()
-            .setView(fragment.context, R.layout.weatherview)
+            .setView(arFragment.context, weatherview)
             .build()
             .thenAccept {
                 it.isShadowCaster = false
@@ -385,10 +409,7 @@ class MainActivity : AppCompatActivity() {
         fragment.arSceneView.scene.addChild(anchorNode)
         node.scaleController.maxScale = 0.2f
         node.scaleController.minScale = 0.1f
-        node.rotationController.isEnabled = false
-
-
-
+        node.rotationController.isEnabled = true
     }
 
 
