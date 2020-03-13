@@ -29,26 +29,30 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="24dp"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:text="Kilo"/>
 
             <TextView
                 android:id="@+id/updated_at"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14dp"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:text="11.11"/>
 
             <TextView
                 android:id="@+id/latTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:text="69.420"/>
 
             <TextView
                 android:id="@+id/lonTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:text="42.069"/>
         </LinearLayout>
 
 
@@ -65,7 +69,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textSize="18dp"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:text="windy af"/>
 
             <TextView
                 android:id="@+id/temp"
@@ -74,7 +79,8 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif-thin"
                 android:textSize="90dp"
-                android:textColor="#ffffff"/>
+                android:textColor="#ffffff"
+                android:text="-100"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -86,7 +92,8 @@
                     android:id="@+id/temp_min"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#ffffff"/>
+                    android:textColor="#ffffff"
+                    android:text="-10"/>
 
                 <Space
                     android:layout_width="50dp"
@@ -96,7 +103,8 @@
                     android:id="@+id/temp_max"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#ffffff"/>
+                    android:textColor="#ffffff"
+                    android:text="+12"/>
             </LinearLayout>
 
         </LinearLayout>

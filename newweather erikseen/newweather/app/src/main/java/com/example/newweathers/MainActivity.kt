@@ -359,7 +359,6 @@ class MainActivity : AppCompatActivity() {
             .build()
             .thenAccept {
                 addNodetoScene(fragment, anchor, it )
-
                 it.isShadowCaster = false
                 it.isShadowReceiver = false
 
@@ -386,11 +385,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun addNodetoScene(fragment: ArFragment, anchor: Anchor, renderable: Renderable?) {
         val anchorNode = AnchorNode(anchor)
-        val node = TransformableNode(fragment.transformationSystem)
-        node.renderable = renderable
-        node.setParent(anchorNode)
+        val nnode = TransformableNode(fragment.transformationSystem)
+        nnode.renderable = renderable
+        nnode.setParent(anchorNode)
+        nnode.scaleController.maxScale = 0.2f
+        nnode.scaleController.minScale = 0.1f
         fragment.arSceneView.scene.addChild(anchorNode)
-        node.select()
     }
 
 
